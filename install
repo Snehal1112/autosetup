@@ -1,0 +1,30 @@
+#!/bin/bash
+
+. ./install_step
+. ./crt
+. ./container
+
+PARSED_ARGUMENTS=$(getopt -a -n cli -o sc:g --long step,container:,generate -- "$@")
+eval set -- "$PARSED_ARGUMENTS"
+
+while :
+do
+  case "$1" in
+    -s | --step)
+      setup_step
+      shift;
+	  ;;
+    -g | --generate)
+      setup_crt
+      shift;
+    ;;
+    -c | --container)
+      lxc launch ubuntu:20.04 $2
+      lxc exec $2 -- mkdir /data
+      lxc file push -r /data/setupcli $2/data/
+      shift 2;
+    ;;
+    --) shift; break ;;
+    *) echo "Unexpected option: $1 - this should not happen." ;;
+  esac
+done

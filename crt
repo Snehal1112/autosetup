@@ -1,0 +1,16 @@
+#!/bin/bash
+
+setup_crt(){
+	        echo "**************************"
+		echo "* Create self sign Cert  *"
+		echo "**************************"
+		
+		mkdir -p /srv/tls && cd /srv/tls
+		step certificate create $(hostname -s)-ca $(hostname -s)-ca.crt $(hostname -s)-ca.key --profile root-ca
+		step certificate install $(hostname -s)-ca.crt
+		step certificate create  $(hostname -f) server.crt server.key --san $(hostname -f) --san $(hostname -s) --profile leaf --ca ./$(hostname -s)-ca.crt --ca-key ./$(hostname -s)-ca.key --no-password --insecure --not-after "$(date --date "next year" -Iseconds)"
+		step certificate bundle server.crt $(hostname -s).crt bundle.crt
+		chmod 644 bundle.crt
+		chmod 640 server.key
+		chown .www-data server.key
+}

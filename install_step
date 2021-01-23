@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. ./cli.cfg
+
+setup_step() {
+
+    STEP=$PWD/$STEP_DIR
+
+    echo "***********************"
+    echo "* Install step cli    *"
+    echo "***********************"
+ 
+    if [ ! -f "$STEP" ]; then
+        echo "***********************"
+        echo "* Download step cli    *"
+        echo "***********************"
+        sudo apt update -y && sudo apt install -f wget
+        wget https://github.com/smallstep/cli/releases/download/v0.15.2/step-cli_0.15.2_amd64.deb
+        mv step-cli_0.15.2_amd64.deb $PWD/data/
+    fi
+
+    sudo dpkg -i $PWD/$STEP_DIR
+
+    echo "*********************************"
+    echo "* Install step cli successfully *"
+    echo "*********************************"
+}
